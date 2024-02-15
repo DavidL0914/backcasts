@@ -15,6 +15,14 @@ class UserAPI:
             json_ready = [row[0] for row in image_data]
             print(json_ready)
             return jsonify(json_ready)
+        def post(self):
+            token = request.cookies.get('jwt')
+            data=jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"]) 
+            useruid = data["_uid"] #get cookie, decode, get uid from it
+            users = User.query.all() #get all users from database so you can filter
+            for user in users: #iterate through each user
+                if user.uid == useruid: #check if the uid from the DB matches the one from the cookie to identify the user
+                    print(user.text) # take data from column of the filtered user and interact with it however you want, ex. return(user.text) to send to frontend    
         def put(self):
             body = request.get_json()
             token = request.cookies.get("jwt")
@@ -121,7 +129,7 @@ class UserAPI:
                             algorithm="HS256"
                         )
                         resp = Response("Authentication for %s successful" % (user._uid))
-                        resp.set_cookie(key="jwt", value=token, max_age=3600, secure=True, samesite='None', path='/', httponly=False, domain="davidl0914.github.io/frontcasts")
+                        resp.set_cookie(key="jwt", value=token, max_age=3600, secure=True, samesite='None', path='/', httponly=False, domain="davidl0914.github.io")
                         print(resp.headers)
                         return resp
                     except Exception as e:
