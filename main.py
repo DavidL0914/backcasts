@@ -76,7 +76,6 @@ app.cli.add_command(custom_cli)
 # @app.before_first_request
 def activate_job():
     initUsers()
-        
 # this runs the application on the development server
 if __name__ == "__main__":
     # change name for testing
