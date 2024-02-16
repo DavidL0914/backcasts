@@ -129,7 +129,7 @@ class UserAPI:
                             algorithm="HS256"
                         )
                         resp = Response("Authentication for %s successful" % (user._uid))
-                        resp.set_cookie(key="jwt", value=token, max_age=3600, secure=True, samesite='None', path='/', httponly=False, domain=".github.io")
+                        resp.set_cookie(key="jwt", value=token, max_age=3600, secure=True, samesite='None', path='/', httponly=False, domain="127.0.0.1")
                         print(resp.headers) 
                         return resp
                     except Exception as e:
