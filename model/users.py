@@ -9,14 +9,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 ''' Tutorial: https://www.sqlalchemy.org/library.html#tutorials, try to get into Python shell and follow along '''
 # Define the Post class to manage actions in 'posts' table,  with a relationship to 'users' table
 class User(db.Model):
-    __tablename__ = 'users'  # table name is plural, class name is singular
-    # Define the User schema with "vars" from object
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
     _name = db.Column(db.String(255), unique=False, nullable=False)
     _uid = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _image = db.Column(db.String(255), unique=False, nullable=False)
     _role = db.Column(db.String(255))
+    theme = db.Column(db.String(10), default='light')
+
     # Defines a relationship between User record and Notes table, one-to-many (one user to many notes)
     # constructor of a User object, initializes the instance variables within object (self)
     def __init__(self, name, uid, password="123qwerty", image='link', role="default"):
