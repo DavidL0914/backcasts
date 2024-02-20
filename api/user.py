@@ -5,6 +5,7 @@ from flask_restful import Api, Resource
 from auth_middleware import token_required
 from model.users import User
 from model.text_upload import TextUpload
+from __init__ import db
 
 user_api = Blueprint('user_api', __name__, url_prefix='/api/users')
 api = Api(user_api)
@@ -82,10 +83,13 @@ class UserAPI:
             uid = body.get('uid')
             name = body.get('name')
             image = body.get('image')
+            theme = body.get('theme')  # Added theme update
             users = User.query.all()
             for user in users:
                 if user.uid == uid:
                     user.update(name, '', '', image)
+                    user.theme = theme  # Set the theme
+                    db.session.commit()  # Commit the changes to the database
             return f"{user.read()} Updated"
 
     class _Security(Resource):

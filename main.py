@@ -24,6 +24,10 @@ def index():
 def table():
     return render_template("table.html")
 
+@app.route('/settings/')
+def settings():
+    return render_template("settings.html")
+
 @app.route('/api/users/save_settings', methods=['POST'])
 def save_settings():
     try:
