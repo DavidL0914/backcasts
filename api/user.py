@@ -1,3 +1,6 @@
+# user.py
+
+from auth_middleware import token_required
 import jwt
 from flask import Blueprint, request, jsonify, current_app, Response
 from flask_restful import Api, Resource
@@ -58,12 +61,14 @@ class UserAPI:
                 return ((user.read()), 200)
             return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 400
 
-        def get(self):
+        @token_required
+        def get(self, current_user):
             users = User.query.all()
             json_ready = [user.read() for user in users]
             return jsonify(json_ready)
 
-        def delete(self):
+        @token_required
+        def delete(self, current_user):
             body = request.get_json()
             uid = body.get('uid')
             users = User.query.all()
@@ -72,7 +77,8 @@ class UserAPI:
                     user.delete()
             return jsonify(user.read())
 
-        def put(self):
+        @token_required
+        def put(self, current_user):
             body = request.get_json()
             uid = body.get('uid')
             name = body.get('name')
@@ -161,7 +167,11 @@ class UserAPI:
             # Check if the provided user credentials match an existing user in the database
             user = User.query.filter_by(_uid=uid).first()
             if user is None or not user.is_password(password) or user.name != username:
-                return {'error': 'Invalid user credentials'}, 401
+                return {'error': 'Invalid user credentials or theme'}, 400
+            
+            # Check if the theme is 'light' or 'dark'
+            if theme not in ['light', 'dark']:
+                return {'error': 'Invalid theme specified'}, 400
             
             # Update the user's theme setting
             user.theme = theme
@@ -174,3 +184,4 @@ class UserAPI:
     api.add_resource(_Security, '/authenticate')
     api.add_resource(_TextUpload, '/upload/text')
     api.add_resource(_Settings, '/save_settings')
+
