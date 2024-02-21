@@ -1,10 +1,7 @@
-import json
 import jwt
 from flask import Blueprint, request, jsonify, current_app, Response
 from flask_restful import Api, Resource
-from auth_middleware import token_required
 from model.users import User
-from model.text_upload import TextUpload
 from __init__ import db
 
 user_api = Blueprint('user_api', __name__, url_prefix='/api/users')
@@ -61,14 +58,12 @@ class UserAPI:
                 return ((user.read()), 200)
             return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 400
 
-        @token_required
-        def get(self, current_user):
+        def get(self):
             users = User.query.all()
             json_ready = [user.read() for user in users]
             return jsonify(json_ready)
 
-        @token_required
-        def delete(self, current_user):
+        def delete(self):
             body = request.get_json()
             uid = body.get('uid')
             users = User.query.all()
@@ -77,8 +72,7 @@ class UserAPI:
                     user.delete()
             return jsonify(user.read())
 
-        @token_required
-        def put(self, current_user):
+        def put(self):
             body = request.get_json()
             uid = body.get('uid')
             name = body.get('name')
@@ -156,7 +150,27 @@ class UserAPI:
             else:
                 return {'message': 'Error uploading text'}, 500
 
+    class _Settings(Resource):
+        def post(self):
+            data = request.json.get('settings')
+            uid = data.get('uid')
+            username = data.get('name')
+            password = data.get('password')
+            theme = data.get('theme')
+
+            # Check if the provided user credentials match an existing user in the database
+            user = User.query.filter_by(_uid=uid).first()
+            if user is None or not user.is_password(password) or user.name != username:
+                return {'error': 'Invalid user credentials'}, 401
+            
+            # Update the user's theme setting
+            user.theme = theme
+            db.session.commit()
+
+            return {'message': 'Settings saved successfully'}, 200
+
+    api.add_resource(_Image, '/image')
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
     api.add_resource(_TextUpload, '/upload/text')
-    api.add_resource(_Image, '/image')
+    api.add_resource(_Settings, '/save_settings')
