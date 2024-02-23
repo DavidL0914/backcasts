@@ -179,9 +179,29 @@ class UserAPI:
 
             return {'message': 'Settings saved successfully'}, 200
 
+    class _ChangeUsername(Resource):
+        def post(self):
+            data = request.get_json()
+            current_username = data.get('currentUsername')
+            current_uid = data.get('currentUid')
+            current_password = data.get('currentPassword')
+            new_username = data.get('newUsername')
+
+            # Check if the provided user credentials match an existing user in the database
+            user = User.query.filter_by(_uid=current_uid).first()
+            if user is None or not user.is_password(current_password) or user.name != current_username:
+                return {'error': 'Invalid user credentials'}, 400
+            
+            # Update the user's username
+            user.name = new_username
+            db.session.commit()
+
+            return {'message': 'Username changed successfully'}, 200
+
     api.add_resource(_Image, '/image')
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
     api.add_resource(_TextUpload, '/upload/text')
     api.add_resource(_Settings, '/save_settings')
+    api.add_resource(_ChangeUsername, '/change_username')
 
