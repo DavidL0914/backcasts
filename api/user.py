@@ -41,6 +41,13 @@ class UserAPI:
                     print(image)
                     print(user._image)
 
+    class _Name(Resource):
+        def get(self):
+            name_data = User.query.with_entities(User._name).all()
+            json_ready = [row[0] for row in name_data]
+            print(json_ready)
+            return jsonify(json_ready)
+
     class _CRUD(Resource):
         def post(self):
             body = request.get_json()
@@ -180,6 +187,7 @@ class UserAPI:
             return {'message': 'Settings saved successfully'}, 200
 
     api.add_resource(_Image, '/image')
+    api.add_resource(_Name, '/name')
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
     api.add_resource(_TextUpload, '/upload/text')
