@@ -1,5 +1,3 @@
-# user.py
-
 from auth_middleware import token_required
 import jwt
 from flask import Blueprint, request, jsonify, current_app, Response
@@ -204,4 +202,3 @@ class UserAPI:
     api.add_resource(_TextUpload, '/upload/text')
     api.add_resource(_Settings, '/save_settings')
     api.add_resource(_ChangeUsername, '/change_username')
-
