@@ -10,7 +10,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Define the Post class to manage actions in 'posts' table,  with a relationship to 'users' table
 class User(db.Model):
     __tablename__ = 'users'
-
     id = db.Column(db.Integer, primary_key=True)
     _name = db.Column(db.String(255), unique=False, nullable=False)
     _uid = db.Column(db.String(255), unique=True, nullable=False)

@@ -1,3 +1,5 @@
+# user.py
+
 from auth_middleware import token_required
 import jwt
 from flask import Blueprint, request, jsonify, current_app, Response
@@ -38,6 +40,28 @@ class UserAPI:
                     user.update("", "", "", user._image + "///" + image)
                     print(image)
                     print(user._image)
+                    
+        def delete(self):
+            try:
+                token = request.cookies.get('jwt')
+                data = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"]) 
+                useruid = data["_uid"]
+
+                # Assuming you have a method to get the current user based on uid
+                user = User.query.filter_by(_uid=useruid).first()
+
+                if user:
+                    # Your image deletion logic here
+                    # For example, assuming you store images in the database, you can remove the image attribute
+                    user.image = ''
+                    db.session.commit()
+
+                    return {'message': 'Image deleted successfully'}, 200
+                else:
+                    return {'error': 'User not found'}, 404
+            except Exception as e:
+                return {'error': str(e)}, 500
+
 
     class _Name(Resource):
         def get(self):
@@ -184,29 +208,10 @@ class UserAPI:
 
             return {'message': 'Settings saved successfully'}, 200
 
-    class _ChangeUsername(Resource):
-        def post(self):
-            data = request.get_json()
-            current_username = data.get('currentUsername')
-            current_uid = data.get('currentUid')
-            current_password = data.get('currentPassword')
-            new_username = data.get('newUsername')
-
-            # Check if the provided user credentials match an existing user in the database
-            user = User.query.filter_by(_uid=current_uid).first()
-            if user is None or not user.is_password(current_password) or user.name != current_username:
-                return {'error': 'Invalid user credentials'}, 400
-            
-            # Update the user's username
-            user.name = new_username
-            db.session.commit()
-
-            return {'message': 'Username changed successfully'}, 200
-
     api.add_resource(_Image, '/image')
     api.add_resource(_Name, '/name')
     api.add_resource(_CRUD, '/')
     api.add_resource(_Security, '/authenticate')
     api.add_resource(_TextUpload, '/upload/text')
     api.add_resource(_Settings, '/save_settings')
-    api.add_resource(_ChangeUsername, '/change_username')
+
