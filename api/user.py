@@ -1,5 +1,3 @@
-# user.py
-
 from auth_middleware import token_required
 import jwt
 from flask import Blueprint, request, jsonify, current_app, Response
@@ -64,11 +62,21 @@ class UserAPI:
 
 
     class _Name(Resource):
-        def get(self):
-            name_data = User.query.with_entities(User._name).all()
-            json_ready = [row[0] for row in name_data]
-            print(json_ready)
-            return jsonify(json_ready)
+        def put(self):
+            body = request.get_json()
+            uid = body.get('uid')
+            new_name = body.get('new_name')
+
+            # Check if the user exists
+            user = User.query.filter_by(_uid=uid).first()
+            if not user:
+                return {'error': 'User not found'}, 404
+
+            # Update the user's name
+            user._name = new_name
+            db.session.commit()
+
+            return {'message': 'Username updated successfully'}, 200
 
     class _CRUD(Resource):
         def post(self):
@@ -214,4 +222,3 @@ class UserAPI:
     api.add_resource(_Security, '/authenticate')
     api.add_resource(_TextUpload, '/upload/text')
     api.add_resource(_Settings, '/save_settings')
-
