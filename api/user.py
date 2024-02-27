@@ -37,7 +37,7 @@ class UserAPI:
             for user in users:
                 if user.uid == data["_uid"]:
                     print(data["_uid"])
-                    user.update("", "", "", user._image + "///" + image)
+                    user.update("", "", "", user._image + "///" + image, user._role)
                     print(image)
                     print(user._image)
                     
@@ -116,7 +116,7 @@ class UserAPI:
             users = User.query.all()
             for user in users:
                 if user.uid == uid:
-                    user.update(name, '', '', image)
+                    user.update(name, '', '', image, user.role)
                     user.theme = theme  # Set the theme
                     db.session.commit()  # Commit the changes to the database
             return f"{user.read()} Updated"
