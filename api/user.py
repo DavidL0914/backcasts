@@ -62,6 +62,11 @@ class UserAPI:
 
 
     class _Name(Resource):
+        def get(self):
+            name_data = User.query.with_entities(User._name).all()
+            json_ready = [row[0] for row in name_data]
+            print(json_ready)
+            return jsonify(json_ready)
         def put(self):
             body = request.get_json()
             uid = body.get('uid')
@@ -203,6 +208,7 @@ class UserAPI:
 
             # Check if the provided user credentials match an existing user in the database
             user = User.query.filter_by(_uid=uid).first()
+            print(user)
             if user is None or not user.is_password(password) or user.name != username:
                 return {'error': 'Invalid user credentials or theme'}, 400
             
