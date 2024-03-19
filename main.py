@@ -6,11 +6,13 @@ from api.user import user_api
 from api.player import player_api
 from model.users import initUsers
 from model.players import initPlayers
+from api.diabetes import predict_api
 
 db.init_app(app)
 
 app.register_blueprint(user_api)
 app.register_blueprint(player_api)
+app.register_blueprint(predict_api)
 
 @app.errorhandler(404)
 def page_not_found(e):
