@@ -18,23 +18,25 @@ weekly_sugar_intake_std = 60
 weekly_sugar_intake = np.random.normal(weekly_sugar_intake_mean, weekly_sugar_intake_std, num_samples)
 
 # Adjust activity based on age
-weekly_activity_mean = 2 - (age - age_mean) * 0.05  # Activity decreases with age
+# Higher activity level is associated with a lower risk of diabetes
+weekly_activity_mean = 2 + (age - age_mean) * 0.05  # Activity increases with age
 weekly_activity_std = 0.5
 weekly_activity = np.random.normal(weekly_activity_mean, weekly_activity_std, num_samples)
 
-# Adjust weight based on age and sugar intake
-weight_mean = 80 + (age - age_mean) * 0.5 + (weekly_sugar_intake - 200) * 0.05
-weight_std = 15
-weight = np.random.normal(weight_mean, weight_std, num_samples)
+# Generate approximate body fat percentage based on age and sugar intake
+# Higher body fat percentage is associated with a higher risk of diabetes
+body_fat_percentage_mean = 35 - (age - age_mean) * 0.2 - (weekly_sugar_intake - 200) * 0.02
+body_fat_percentage_std = 5
+body_fat_percentage = np.random.normal(body_fat_percentage_mean, body_fat_percentage_std, num_samples)
 
 # Generate labels (0 for non-diabetic, 1 for diabetic)
 # Adjust label probabilities based on known prevalence of diabetes
 probability_of_diabetes = (
-    0.15 +                                     # Base probability
-    (age - 45) * 0.005 +                       # Age effect
-    (weekly_sugar_intake - 200) * 0.001 -      # Sugar intake effect
-    (weekly_activity - 2) * 0.05 -             # Activity effect
-    (weight - 80) * 0.001                      # Weight effect
+    0.15 +                                      # Base probability
+    (age - 45) * 0.005 +                        # Age effect
+    (weekly_sugar_intake - 200) * 0.001 +       # Sugar intake effect
+    (2 - weekly_activity) * 0.05 +              # Activity effect (reverse relationship)
+    (body_fat_percentage - 35) * 0.003          # Body fat percentage effect
 )
 
 # Bound probability values between 0 and 1
@@ -53,7 +55,7 @@ data = pd.DataFrame({
     'Height': height,
     'Weekly Sugar Intake': weekly_sugar_intake,
     'Weekly Activity': weekly_activity,
-    'Weight': weight,
+    'Body Fat Percentage': body_fat_percentage,
     'Age': age,
     'Diabetic': labels
 })

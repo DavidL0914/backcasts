@@ -40,7 +40,7 @@ class Predict(Resource):
         height = float(body.get("height"))
         weekly_sugar_intake = float(body.get("sugar"))
         weekly_activity = float(body.get("activity"))
-        weight = float(body.get("weight"))
+        weight = float(body.get("bodyfat"))
         age = float(body.get("age"))
         chance_of_diabetes = predict_diabetes(height, weekly_sugar_intake, weekly_activity, weight, age) 
         return (jsonify(f"Based on the provided data, the chance of being diabetic is: {chance_of_diabetes * 100:.2f}%"))
