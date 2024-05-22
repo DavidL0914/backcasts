@@ -198,6 +198,27 @@ class UserAPI:
             else:
                 return {'message': 'Error uploading text'}, 500
 
+    class _Recipe(Resource):
+        def get(self):
+            Users = User.query.all()
+            resp = []
+            for user in Users:
+                if user.ratings is not None:
+                    resp.append(user.ratings, user.uid)
+            print(resp)
+            return resp
+        def post(self):
+            data = request.get_json()
+            token = request.cookies.get('jwt')
+            tokenData = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+            Users = User.query.all()
+            for user in Users:
+                if tokenData["_uid"] == user.uid:
+                    for i in user.ratings:
+                        if data["id"] in i:
+                            user.ratings -= i
+                    user.ratings += [data.id, data.starCount]
+            
     class _Settings(Resource):
         def post(self):
             data = request.json.get('settings')
@@ -228,3 +249,4 @@ class UserAPI:
     api.add_resource(_Security, '/authenticate')
     api.add_resource(_TextUpload, '/upload/text')
     api.add_resource(_Settings, '/save_settings')
+    api.add_resource(_Recipe, '/recipe')

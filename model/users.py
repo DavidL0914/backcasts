@@ -16,17 +16,25 @@ class User(db.Model):
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _image = db.Column(db.String(255), unique=False, nullable=False)
     _role = db.Column(db.String(255))
+    _ratings = db.Column(db.String(255))
     theme = db.Column(db.String(10), default='light')
 
     # Defines a relationship between User record and Notes table, one-to-many (one user to many notes)
     # constructor of a User object, initializes the instance variables within object (self)
-    def __init__(self, name, uid, password="123qwerty", image='', role="default"):
+    def __init__(self, name, uid, password="123qwerty", image='', role="default", ratings=""):
         self._name = name    # variables with self prefix become part of the object,
         self._uid = uid
         self.set_password(password)
         self._image = image
         self._role = role
+        self._ratings = ratings
     # a name getter method, extracts name from object
+    @property
+    def ratings(self):
+        return self._rating
+    @ratings.setter
+    def role(self, rating):
+        self._rating = rating
     @property
     def role(self):
         return self._role
@@ -95,11 +103,12 @@ class User(db.Model):
             "name": self.name,
             "uid": self.uid,
             "image": self.image,
-            "role": self.role
+            "role": self.role,
+            "ratings": self.ratings,
         }
     # CRUD update: updates user name, password, phone
     # returns self
-    def update(self, name="", uid="", password="", image='', role="default"):
+    def update(self, name="", uid="", password="", image='', role="default", ratings=''):
         """only updates values with length"""
         if len(name) > 0:
             self.name = name
