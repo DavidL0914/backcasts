@@ -217,7 +217,7 @@ class UserAPI:
                     for i in user.ratings:
                         if data["id"] in i:
                             user.ratings -= i
-                    user.ratings += [data.id, data.starCount]
+                    user.ratings += [data["id"], data["starCount"]]
             
     class _Settings(Resource):
         def post(self):
