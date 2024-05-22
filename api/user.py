@@ -215,9 +215,9 @@ class UserAPI:
             for user in Users:
                 if tokenData["_uid"] == user.uid:
                     for i in user.ratings:
-                        if data["id"] in i:
+                        if data.get("id") in i:
                             user.ratings -= i
-                    user.ratings += [data["id"], data["starCount"]]
+                    user.ratings += [data.get("id"), data.get("starCount")]
             
     class _Settings(Resource):
         def post(self):
