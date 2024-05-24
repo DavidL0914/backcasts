@@ -31,10 +31,10 @@ class User(db.Model):
     # a name getter method, extracts name from object
     @property
     def ratings(self):
-        return self._rating
+        return self._ratings
     @ratings.setter
-    def role(self, rating):
-        self._rating = rating
+    def ratings(self, ratings):
+        self._rating = ratings
     @property
     def role(self):
         return self._role
@@ -120,6 +120,8 @@ class User(db.Model):
             self.role = role
         if len(image) > 0:
             self.image = image
+        if len(ratings) > 0:
+            self.ratings = ratings
         db.session.commit()
         return self
     # CRUD delete: remove self

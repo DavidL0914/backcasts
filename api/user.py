@@ -162,7 +162,7 @@ class UserAPI:
                             algorithm="HS256"
                         )
                         resp = Response("Authentication for %s successful" % (user._uid))
-                        resp.set_cookie(key="jwt", value=token, max_age=3600, secure=True, samesite='None', path='/', httponly=False)
+                        resp.set_cookie(key="jwt", value=token, max_age=3600, secure=False, samesite=None, path='/', httponly=False)
                         print(resp.headers) 
                         return resp
                     except Exception as e:
@@ -209,16 +209,51 @@ class UserAPI:
             return resp
         def post(self):
             data = request.get_json()
+            print(data)
+
+            # Get the token from cookies
             token = request.cookies.get('jwt')
-            tokenData = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
-            Users = User.query.all()
-            for user in Users:
-                if tokenData["_uid"] == user.uid:
-                    for i in user.ratings:
-                        if data.get("id") in i:
-                            user.ratings -= i
-                    user.ratings += [data.get("id"), data.get("starCount")]
-            
+            if not token:
+                return {"message": "Token is missing!"}, 400
+
+            try:
+                # Ensure token is bytes before decoding
+                if isinstance(token, str):
+                    token = token.encode('utf-8')
+
+                tokenData = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+            except jwt.exceptions.DecodeError:
+                return {"message": "Invalid token!"}, 401
+            except jwt.exceptions.ExpiredSignatureError:
+                return {"message": "Token has expired!"}, 401
+            except jwt.exceptions.InvalidTokenError:
+                return {"message": "Invalid token!"}, 401
+            print(tokenData)
+            user = User.query.filter_by(_uid=tokenData["_uid"]).first()
+            if not user:
+                return {"message": "User not found!"}, 404
+
+            # Update ratings
+            id_to_update = data.get("id")
+            star_count = data.get("starCount")
+
+            if not id_to_update or star_count is None:
+                return {"message": "Invalid data!"}, 400
+
+            updated_ratings = []
+
+            # Add the new rating
+            updated_ratings = (str(id_to_update), str(star_count))
+            user._ratings += str(updated_ratings) + " "
+
+            # Commit the changes to the database
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return {"message": "An error occurred while updating ratings!"}, 500
+
+            return {"message": "Ratings updated successfully!"}, 200
     class _Settings(Resource):
         def post(self):
             data = request.json.get('settings')
