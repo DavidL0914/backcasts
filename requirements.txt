@@ -9,3 +9,5 @@ Flask_Restful
 Flask_Cors
 PyJWT
 pandas
+sklearn
+numpy
