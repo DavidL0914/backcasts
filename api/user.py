@@ -197,27 +197,41 @@ class UserAPI:
                 return jsonify({'message': 'Text uploaded successfully'}), 200
             else:
                 return {'message': 'Error uploading text'}, 500
+    class _AllRatings(Resource):
+        def get(self):
+            Users = User.query.all()
+            ratings = {}
+            for user in Users:
+                if user._ratings:
+                    for rating in user._ratings.split():
+                        recipe_id, star_count = rating.split(":")
+                        star_count = int(star_count)
+                        if recipe_id not in ratings or ratings[recipe_id]['starCount'] < star_count:
+                            ratings[recipe_id] = {
+                                "uid": user._name,
+                                "starCount": star_count
+                            }
+            return jsonify(ratings)
 
     class _Recipe(Resource):
         def get(self):
             Users = User.query.all()
             resp = []
             for user in Users:
-                if user.ratings is not None:
-                    resp.append(user.ratings, user.uid)
+                if user.ratings:
+                    resp.append((user.ratings, user._uid))
             print(resp)
-            return resp
+            return jsonify(resp)
+
         def post(self):
             data = request.get_json()
             print(data)
 
-            # Get the token from cookies
             token = request.cookies.get('jwt')
             if not token:
                 return {"message": "Token is missing!"}, 400
 
             try:
-                # Ensure token is bytes before decoding
                 if isinstance(token, str):
                     token = token.encode('utf-8')
 
@@ -233,20 +247,18 @@ class UserAPI:
             if not user:
                 return {"message": "User not found!"}, 404
 
-            # Update ratings
             id_to_update = data.get("id")
             star_count = data.get("starCount")
 
             if not id_to_update or star_count is None:
                 return {"message": "Invalid data!"}, 400
 
-            updated_ratings = []
+            updated_ratings = f"{id_to_update}:{star_count}"
+            if user._ratings:
+                user._ratings += f" {updated_ratings}"
+            else:
+                user._ratings = updated_ratings
 
-            # Add the new rating
-            updated_ratings = (str(id_to_update), str(star_count))
-            user._ratings += str(updated_ratings) + " "
-
-            # Commit the changes to the database
             try:
                 db.session.commit()
             except Exception as e:
@@ -254,6 +266,7 @@ class UserAPI:
                 return {"message": "An error occurred while updating ratings!"}, 500
 
             return {"message": "Ratings updated successfully!"}, 200
+
     class _Settings(Resource):
         def post(self):
             data = request.json.get('settings')
@@ -277,7 +290,7 @@ class UserAPI:
             db.session.commit()
 
             return {'message': 'Settings saved successfully'}, 200
-
+    api.add_resource(_AllRatings, '/ratings')
     api.add_resource(_Image, '/image')
     api.add_resource(_Name, '/name')
     api.add_resource(_CRUD, '/')
