@@ -49,7 +49,11 @@ def before_request():
     allowed_origin = request.headers.get('Origin')
     if allowed_origin in ['http://localhost:4100', 'http://127.0.0.1:4100', 'https://davidl0914.github.io']:
         cors._origins = allowed_origin
-
+@app.after_request
+def apply_cors(response):
+    response.headers["Access-Control-Allow-Origin"] = "https://davidl0914.github.io"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 custom_cli = AppGroup('custom', help='Custom commands')
 
 @custom_cli.command('generate_data')
