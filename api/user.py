@@ -260,7 +260,7 @@ class UserAPI:
 
             # Check if the provided user credentials match an existing user in the database
             user = User.query.filter_by(_uid=uid).first()
-            print(user)
+            print(user) 
             if user is None or not user.is_password(password) or user.name != username:
                 return {'error': 'Invalid user credentials or theme'}, 400
             
