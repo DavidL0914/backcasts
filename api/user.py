@@ -196,22 +196,22 @@ class UserAPI:
                 return jsonify({'message': 'Text uploaded successfully'}), 200
             else:
                 return {'message': 'Error uploading text'}, 500
-class _AllRatings(Resource):
-    def get(self):
-        Users = User.query.all()
-        ratings = {}
-        for user in Users:
-            if user._ratings:
-                for rating in user._ratings.split():
-                    recipe_id, star_count = rating.split(":")
-                    star_count = int(star_count)
-                    if recipe_id not in ratings or ratings[recipe_id]['starCount'] < star_count:
-                        ratings[recipe_id] = {
-                            "uid": user._name,
-                            "starCount": star_count
-                        }
-        response = jsonify(ratings)
-        return response
+    class _AllRatings(Resource):
+        def get(self):
+            Users = User.query.all()
+            ratings = {}
+            for user in Users:
+                if user._ratings:
+                    for rating in user._ratings.split():
+                        recipe_id, star_count = rating.split(":")
+                        star_count = int(star_count)
+                        if recipe_id not in ratings or ratings[recipe_id]['starCount'] < star_count:
+                            ratings[recipe_id] = {
+                                "uid": user._name,
+                                "starCount": star_count
+                            }
+            response = jsonify(ratings)
+            return response
 
     class _Recipe(Resource):
         def post(self):
