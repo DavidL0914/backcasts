@@ -210,7 +210,7 @@ class UserAPI:
                                 "uid": user._name,
                                 "starCount": star_count
                             }
-            response = jsonify('PLEASE')
+            response = jsonify({'message': 'PLEASE'})
             response.headers['Content-Type'] = 'application/json'
             return response
 
