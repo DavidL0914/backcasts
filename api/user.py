@@ -210,8 +210,7 @@ class UserAPI:
                                 "uid": user._name,
                                 "starCount": star_count
                             }
-            response = jsonify({'message': 'PLEASE'})
-            response.headers['Content-Type'] = 'application/json'
+            response = jsonify(ratings)
             return response
 
     class _Recipe(Resource):
