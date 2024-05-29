@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, current_app, Response
 from flask_restful import Api, Resource
 from model.users import User
 from __init__ import db
-
+import json
 user_api = Blueprint('user_api', __name__, url_prefix='/api/users')
 api = Api(user_api)
 
@@ -211,7 +211,9 @@ class UserAPI:
                                 "uid": user._name,
                                 "starCount": star_count
                             }
-            return jsonify(ratings)
+            response = jsonify(json.dumps(ratings))
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
     class _Recipe(Resource):
         def post(self):
@@ -229,7 +231,9 @@ class UserAPI:
             else:
                 user._ratings = updated_ratings
             db.session.commit()
-            return jsonify({"message": "Ratings updated successfully!"}, 200)
+            response =  json.jsonify(json.dumps({"message": "Ratings updated successfully!"}), 200)
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
     class _Settings(Resource):
         def post(self):
