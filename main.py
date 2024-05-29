@@ -12,7 +12,7 @@ db.init_app(app)
 
 app.register_blueprint(user_api)
 app.register_blueprint(player_api)
-app.register_blueprint(predict_api)
+# app.register_blueprint(predict_api)
 
 @app.errorhandler(404)
 def page_not_found(e):
