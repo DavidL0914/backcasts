@@ -139,9 +139,9 @@ def initUsers():
         """Tester data for table"""
         u1 = User(name='Tommy Dough', uid='tom', password='123tom')
         u2 = User(name='Nicky', uid='niky', password='123niky')
-        u3 = User(name='Alexander the Great', uid='lex', password='123lex')
-        u4 = User(name='Grace Li', uid='li', password='123li')
-        u5 = User(name='Admin', uid='root', password='root', role="admin")
+        u3 = User(name='Alexander the Great', uid='lex', password='123lex', ratings="634006:3")
+        u4 = User(name='Grace Li', uid='li', password='123li', ratings="634006:5")
+        u5 = User(name='Admin', uid='root', password='root', role="admin", ratings="634006:4")
         users = [u1, u2, u3, u4, u5]
         """Builds sample user/note(s) data"""
         for user in users:
