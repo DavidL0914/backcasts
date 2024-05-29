@@ -226,7 +226,8 @@ class UserAPI:
         def post(self):
             data = request.get_json()
             #print(data)
-            user = User.query.filter_by(_uid=data.get("uid")).first()
+            uid = data.get("uid")
+            user = User.query.filter_by(_uid=uid).first()
             id_to_update = data.get("id")
             star_count = data.get("starCount")
 
