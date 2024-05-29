@@ -225,29 +225,18 @@ class UserAPI:
 
         def post(self):
             data = request.get_json()
-            print(data)
+            #print(data)
             user = User.query.filter_by(_uid=data.get("uid")).first()
-            if not user:
-                return {"message": "User not found!"}, 404
-
             id_to_update = data.get("id")
             star_count = data.get("starCount")
 
-            if not id_to_update or star_count is None:
-                return {"message": "Invalid data!"}, 400
 
             updated_ratings = f"{id_to_update}:{star_count}"
             if user._ratings:
                 user._ratings += f" {updated_ratings}"
             else:
                 user._ratings = updated_ratings
-
-            try:
-                db.session.commit()
-            except Exception as e:
-                db.session.rollback()
-                return {"message": "An error occurred while updating ratings!"}, 500
-
+            db.session.commit()
             return {"message": "Ratings updated successfully!"}, 200
 
     class _Settings(Resource):
