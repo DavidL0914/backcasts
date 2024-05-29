@@ -226,24 +226,7 @@ class UserAPI:
         def post(self):
             data = request.get_json()
             print(data)
-
-            token = request.cookies.get('jwt')
-            if not token:
-                return {"message": "Token is missing!"}, 400
-
-            try:
-                if isinstance(token, str):
-                    token = token.encode('utf-8')
-
-                tokenData = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
-            except jwt.exceptions.DecodeError:
-                return {"message": "Invalid token!"}, 401
-            except jwt.exceptions.ExpiredSignatureError:
-                return {"message": "Token has expired!"}, 401
-            except jwt.exceptions.InvalidTokenError:
-                return {"message": "Invalid token!"}, 401
-            print(tokenData)
-            user = User.query.filter_by(_uid=tokenData["_uid"]).first()
+            user = User.query.filter_by(_uid=data.get("uid")).first()
             if not user:
                 return {"message": "User not found!"}, 404
 
