@@ -4,7 +4,6 @@ from flask import Blueprint, request, jsonify, current_app, Response
 from flask_restful import Api, Resource
 from model.users import User
 from __init__ import db
-import json
 user_api = Blueprint('user_api', __name__, url_prefix='/api/users')
 api = Api(user_api)
 
@@ -211,19 +210,17 @@ class UserAPI:
                                 "uid": user._name,
                                 "starCount": star_count
                             }
-            response = jsonify(json.dumps(ratings))
+            response = jsonify(ratings)
             response.headers['Content-Type'] = 'application/json'
             return response
 
     class _Recipe(Resource):
         def post(self):
             data = request.get_json()
-            #print(data)
             uid = data.get("uid")
             user = User.query.filter_by(_uid=uid).first()
             id_to_update = data.get("id")
             star_count = data.get("starCount")
-
 
             updated_ratings = f"{id_to_update}:{star_count}"
             if user._ratings:
@@ -231,7 +228,7 @@ class UserAPI:
             else:
                 user._ratings = updated_ratings
             db.session.commit()
-            response =  json.jsonify(json.dumps({"message": "Ratings updated successfully!"}), 200)
+            response =  jsonify({"message": "Ratings updated successfully!"})
             response.headers['Content-Type'] = 'application/json'
             return response
 
