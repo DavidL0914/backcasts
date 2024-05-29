@@ -6,7 +6,7 @@ from api.user import user_api
 from api.player import player_api
 from model.users import initUsers
 from model.players import initPlayers
-from api.diabetes import predict_api
+# from api.diabetes import predict_api
 
 db.init_app(app)
 

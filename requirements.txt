@@ -8,6 +8,3 @@ Flask_Migrate
 Flask_Restful
 Flask_Cors
 PyJWT
-pandas
-scikit-learn
-numpy
