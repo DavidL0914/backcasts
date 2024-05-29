@@ -210,7 +210,7 @@ class UserAPI:
                                 "uid": user._name,
                                 "starCount": star_count
                             }
-            response = jsonify(ratings)
+            response = ratings
             response.headers['Content-Type'] = 'application/json'
             return response
 
@@ -228,7 +228,7 @@ class UserAPI:
             else:
                 user._ratings = updated_ratings
             db.session.commit()
-            response =  jsonify({"message": "Ratings updated successfully!"})
+            response =  {"message": "Ratings updated successfully!"}
             response.headers['Content-Type'] = 'application/json'
             return response
 
