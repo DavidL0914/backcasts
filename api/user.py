@@ -211,6 +211,7 @@ class UserAPI:
                                 "starCount": star_count
                             }
             response = jsonify(ratings)
+            response.headers['Content-Type'] = 'application/json'
             return response
 
     class _Recipe(Resource):
