@@ -214,15 +214,6 @@ class UserAPI:
             return jsonify(ratings)
 
     class _Recipe(Resource):
-        def get(self):
-            Users = User.query.all()
-            resp = []
-            for user in Users:
-                if user.ratings:
-                    resp.append((user.ratings, user._uid))
-            print(resp)
-            return jsonify(resp)
-
         def post(self):
             data = request.get_json()
             #print(data)
@@ -238,7 +229,7 @@ class UserAPI:
             else:
                 user._ratings = updated_ratings
             db.session.commit()
-            return {"message": "Ratings updated successfully!"}, 200
+            return jsonify({"message": "Ratings updated successfully!"}, 200)
 
     class _Settings(Resource):
         def post(self):
